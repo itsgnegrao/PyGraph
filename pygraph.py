@@ -20,6 +20,7 @@ class PyVertice:
 
 class PyGraph:
     def __init__(self, digrafo=0):
+        self.tempo = 0
         self.digrafo = digrafo
         self.grafo = []
         self.vetorDistancia = []
@@ -33,10 +34,10 @@ class PyGraph:
             self.adj.append([vertice,[]])
 
 
-    def achaNomePos(self, nome):
+    def achaNomePos(self, vertice):
         aux = -1
         for vert in self.grafo:
-            if(vert.name == nome):
+            if(vert.name == vertice.name):
                 aux = self.grafo.index(vert)
         return aux
 
@@ -122,7 +123,8 @@ class PyGraph:
 
 
     def buscaLargura(self, vertInicial):
-        tempo = 0
+        self.tempo = 0
+        self.vetorDistancia = []
 
         #coloca os tempos como infinitos
         for i in self.grafo:
@@ -132,11 +134,12 @@ class PyGraph:
             if(vertice != vertInicial):
                 vertice.cor = "branco"
                 vertice.predecessor = -1
+
         index = self.grafo.index(vertInicial)
         self.grafo[index].cor = "cinza"
-        self.grafo[index].tempDescoberta = tempo
+        self.grafo[index].tempDescoberta = self.tempo
         self.grafo[index].predecessor = -1
-        self.vetorDistancia[index] = tempo
+        self.vetorDistancia[index] = self.tempo
 
         filaVisitacao = []
         filaVisitacao.append(vertInicial)
@@ -146,16 +149,50 @@ class PyGraph:
             index = self.grafo.index(vertFila)
             vertFilaAdj = self.adj[index][1]
 
-            tempo = vertFila.tempDescoberta+1
+            self.tempo = vertFila.tempDescoberta+1
             for vertAdj in vertFilaAdj:
                 if(vertAdj.cor == "branco"):
                     vertAdj.cor = "cinza"
-                    vertAdj.tempDescoberta = tempo
+                    vertAdj.tempDescoberta = self.tempo
                     index = self.grafo.index(vertAdj)
-                    self.vetorDistancia[index] = tempo
+                    self.vetorDistancia[index] = self.tempo
                     vertAdj.predecessor = vertFila
                     filaVisitacao.append(vertAdj)
             vertFila.cor = "preto"
+
+    #Busca em profundidade
+    def buscaProfundidade(self):
+        self.tempo = 0
+
+        for vertice in self.grafo:
+                vertice.cor = "branco"
+                vertice.predecessor = -1
+
+        for vertice in self.grafo:
+                if(vertice.cor == "branco"):
+                    print("aqui :"+str(vertice))
+                    self.buscaProfundidadeVisita(vertice)
+
+    #Busca em prfundidade visita
+    def buscaProfundidadeVisita(self,vertice):
+        self.tempo +=1
+        vertice.tempDescoberta = self.tempo
+        vertice.cor = "cinza"
+        print("visitando: "+str(vertice)+", tempo: "+str(self.tempo))
+
+        index = self.achaNomePos(vertice)
+        print(vertice)
+        print(index)
+        for vert in self.adj[index][1]:
+            vert = self.verificaNomeVertice(vert)
+            if(vert.cor == "branco"):
+                vert.predecessor = vertice
+                self.buscaProfundidadeVisita(vert)
+
+        vertice.cor = "preto"
+        self.tempo+=1
+        print("finalizado: "+str(vertice)+", tempo: "+str(self.tempo))
+        vertice.tempFinalizado = self.tempo
 
     def printGrafo(self):
         print("\nGrafo: "+PyGraph.getOrdem()+":")
@@ -182,20 +219,44 @@ class PyGraph:
                     sys.stdout.write(" ")
         sys.stdout.write("]\n\n")
 
+    def printTempoDescoberta(self):
+        print("\nTempos De Descoberta: "+PyGraph.getOrdem()+":")
+        sys.stdout.write("[")
+        for vertice in PyGraph.grafo:
+            sys.stdout.write("- ("+str(vertice)+")"+str(vertice.tempDescoberta)+","+str(vertice.tempFinalizado)+" ")
+        print("]\n")
+
 
 if __name__ == '__main__':
     PyGraph = PyGraph()
 
     #inserção
-    vertice = PyVertice("vertice", 4)
-    vertice2 = PyVertice("vertice2")
-    PyGraph.inserirNo(vertice)
-    PyGraph.inserirNo(vertice2)
-    PyGraph.inserirAdj(vertice,vertice2)
+    a = PyVertice("a")
+    PyGraph.inserirNo(a)
+    b = PyVertice("b")
+    PyGraph.inserirNo(b)
+    c = PyVertice("c")
+    PyGraph.inserirNo(c)
+    d = PyVertice("d")
+    PyGraph.inserirNo(d)
+    e = PyVertice("e")
+    PyGraph.inserirNo(e)
+    f = PyVertice("f")
+    PyGraph.inserirNo(f)
+    g = PyVertice("g")
+    PyGraph.inserirNo(g)
+    h = PyVertice("h")
+    PyGraph.inserirNo(h)
 
-    vertice3 = PyVertice("vertice3")
-    PyGraph.inserirNo(vertice3)
-    PyGraph.inserirAdj(vertice, PyGraph.grafo[2])
+    PyGraph.digrafo=1
+    #insere adjascencia
+    PyGraph.inserirAdj(a,b)
+    PyGraph.inserirAdj(a,f)
+    PyGraph.inserirAdj(b,g)
+    PyGraph.inserirAdj(b,c)
+    PyGraph.inserirAdj(b,d)
+    PyGraph.inserirAdj(d,e)
+    PyGraph.inserirAdj(g,h)
 
     #remoção
     #PyGraph.removerNo(vertice3)
@@ -221,26 +282,17 @@ if __name__ == '__main__':
     #grafo é completo ou nao
     print("\nCompleto?:"+str(PyGraph.isCompleto()))
 
-    #grafo é completo ou nao
-    vertice4 = PyVertice("vertice4")
-    PyGraph.inserirNo(vertice4)
-    PyGraph.inserirAdj(vertice, vertice4)
-    vertice5 = PyVertice("vertice5")
-    PyGraph.inserirNo(vertice5)
-    PyGraph.inserirAdj(vertice4,vertice5)
-    vertice6 = PyVertice("vertice6")
-    PyGraph.inserirNo(vertice6)
-    #PyGraph.inserirAdj(vertice5,vertice6)
-    #PyGraph.inserirAdj(vertice3,vertice6)
-
     #buscaLargura
     PyGraph.buscaLargura(PyGraph.grafo[0])
+
+    #buscaProfundidade
+    PyGraph.buscaProfundidade()
 
     print("\nConexo?:"+str(PyGraph.isConexo()))
 
     #print debugs
     print("\nVetor Distancia:")
     PyGraph.printVetorDistancia()
-    ##print de debugs
     PyGraph.printGrafo()
     PyGraph.printAdjacencia()
+    PyGraph.printTempoDescoberta()
