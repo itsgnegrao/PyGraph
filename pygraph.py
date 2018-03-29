@@ -197,7 +197,6 @@ if __name__ == '__main__':
     PyGraph.inserirNo(vertice3)
     PyGraph.inserirAdj(vertice, PyGraph.grafo[2])
 
-
     #remoção
     #PyGraph.removerNo(vertice3)
 
@@ -233,10 +232,13 @@ if __name__ == '__main__':
     PyGraph.inserirNo(vertice6)
     #PyGraph.inserirAdj(vertice5,vertice6)
     #PyGraph.inserirAdj(vertice3,vertice6)
-    print("\nConexo?:"+str(PyGraph.isConexo()))
 
     #buscaLargura
     PyGraph.buscaLargura(PyGraph.grafo[0])
+
+    print("\nConexo?:"+str(PyGraph.isConexo()))
+
+    #print debugs
     print("\nVetor Distancia:")
     PyGraph.printVetorDistancia()
     ##print de debugs
