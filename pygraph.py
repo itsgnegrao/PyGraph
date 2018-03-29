@@ -296,3 +296,5 @@ if __name__ == '__main__':
     PyGraph.printGrafo()
     PyGraph.printAdjacencia()
     PyGraph.printTempoDescoberta()
+
+    print("MODIFICAR PARA SER ORIENTADO OU NÃO")
