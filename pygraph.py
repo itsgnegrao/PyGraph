@@ -25,31 +25,45 @@ class PyGraph:
         self.vetorDistancia = []
         self.adj = []
 
-    #função para inserir dois nos e suas arestas ou uma aresta somente
-    def inserirNo(self, vertice, vertice2 = None):
+   #função para inserir dois nos e suas arestas ou uma aresta somente
+    def inserirNo(self, vertice):
         #caso venha somente um nó (ele não se liga a nenhum outro)
-        if(vertice not in self.grafo):
-            if(vertice2 == None):
-                self.grafo.append(vertice)
-                self.adj.append([vertice,[]])
-            else:
-                self.grafo.append(vertice)
-                self.adj.append([vertice,[]])
-                self.grafo.append(vertice2)
-                self.adj.append([vertice2,[]])
+        if(1 if self.verificaNomeVertice(vertice) == None else 0):
+            self.grafo.append(vertice)
+            self.adj.append([vertice,[]])
 
-                #insere a aresta entre os nós
-                #self.adj[0][1].append(vertice)
-                self.inserirAdj(vertice,vertice2)
+
+    def achaNomePos(self, nome):
+        aux = -1
+        for vert in self.grafo:
+            if(vert.name == nome):
+                aux = self.grafo.index(vert)
+        return aux
+
+    #verifica se existe um vertice com o nome ja no grafo
+    def verificaNomeVertice(self, vertice):
+        aux = None
+        for vert in self.grafo:
+            if(vert.name == vertice.name):
+                aux = vert
+        return aux
 
     #função para inserir uma nova aresta
     def inserirAdj(self, vertice, vertice2):
+        vertice = self.verificaNomeVertice(vertice)
+        vertice2 = self.verificaNomeVertice(vertice2)
         index = self.grafo.index(vertice)
         self.adj[index][1].append(vertice2)
 
         if self.digrafo == 0:
             index2 = self.grafo.index(vertice2)
             self.adj[index2][1].append(vertice)
+
+
+    def limpaGrafo(self):
+        self.grafo = []
+        self.vetorDistancia = []
+        self.adj = []
 
     #função para remover um no e suas arestas
     def removerNo(self,vertice):
@@ -66,11 +80,6 @@ class PyGraph:
     #retorna o grau do Grafo
     def getOrdem(self):
         return str(len(self.grafo))
-
-    #função errada????
-    #ou retornar o numero de arestas
-    def getVertices(self):
-        return self.grafo
 
     #retorna os nos de um Grafo
     def getNos(self):
@@ -111,7 +120,6 @@ class PyGraph:
     def isConexo(self):
         return 1 if (-1 not in self.vetorDistancia) else 0
 
-        ##ARRUMAR
 
     def buscaLargura(self, vertInicial):
         tempo = 0
@@ -149,6 +157,31 @@ class PyGraph:
                     filaVisitacao.append(vertAdj)
             vertFila.cor = "preto"
 
+    def printGrafo(self):
+        print("\nGrafo: "+PyGraph.getOrdem()+":")
+        sys.stdout.write("[")
+        for vertice in PyGraph.grafo:
+            sys.stdout.write("- "+str(vertice)+" ")
+        print("]")
+
+    def printAdjacencia(self):
+        print("\nAdjacencia "+PyGraph.getOrdem()+":")
+        for vertice in PyGraph.adj:
+            sys.stdout.write(str(vertice[0])+" -> ")
+            for vertice2 in vertice[1]:
+                sys.stdout.write(str(vertice2))
+                if(not vertice[1].index(vertice2) == len(vertice[1])-1):
+                    sys.stdout.write(" - ")
+            print()
+
+    def printVetorDistancia(self):
+        sys.stdout.write("[")
+        for i in reversed(PyGraph.vetorDistancia) :
+            if(i!=0):
+                    sys.stdout.write(str(i))
+                    sys.stdout.write(" ")
+        sys.stdout.write("]\n\n")
+
 
 if __name__ == '__main__':
     PyGraph = PyGraph()
@@ -156,7 +189,9 @@ if __name__ == '__main__':
     #inserção
     vertice = PyVertice("vertice", 4)
     vertice2 = PyVertice("vertice2")
-    PyGraph.inserirNo(vertice, vertice2)
+    PyGraph.inserirNo(vertice)
+    PyGraph.inserirNo(vertice2)
+    PyGraph.inserirAdj(vertice,vertice2)
 
     vertice3 = PyVertice("vertice3")
     PyGraph.inserirNo(vertice3)
@@ -168,12 +203,6 @@ if __name__ == '__main__':
 
     #recebe o Ordem
     print("\nOrdem: "+PyGraph.getOrdem())
-
-    #recebe os vertices do Grafo
-    print("\nVertices:")
-    lists = PyGraph.getVertices()
-    for i in lists:
-        print(i)
 
     #recebe os nos do Grafo
     print("\nNos:")
@@ -209,22 +238,7 @@ if __name__ == '__main__':
     #buscaLargura
     PyGraph.buscaLargura(PyGraph.grafo[0])
     print("\nVetor Distancia:")
-    sys.stdout.write("[")
-    for i in PyGraph.vetorDistancia:
-        sys.stdout.write(str(i))
-        sys.stdout.write(" ")
-    sys.stdout.write("]\n\n")
-
+    PyGraph.printVetorDistancia()
     ##print de debugs
-    print("\nGrafo: "+PyGraph.getOrdem()+":")
-    for vertice in PyGraph.grafo:
-        print(PyGraph.grafo.index(vertice))
-        print(vertice)
-
-    print("\nAdjacencia "+PyGraph.getOrdem()+":")
-    for vertice in PyGraph.adj:
-        print(PyGraph.adj.index(vertice))
-        #print(vertice)
-        print(vertice[0])
-        for vertice2 in vertice[1]:
-            print(vertice2)
+    PyGraph.printGrafo()
+    PyGraph.printAdjacencia()
